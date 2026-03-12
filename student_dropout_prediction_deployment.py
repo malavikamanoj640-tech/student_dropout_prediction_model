@@ -12,7 +12,7 @@ import joblib
 
 # Load model and encoder
 model = joblib.load("student_dropout_prediction_model.pkl")
-encoder = joblib.load("label_encoder_student_dropout.pkl")
+encoder = joblib.load("label_encoder_student_dropout_prediction.pk1")
 
 st.title("Student Dropout Prediction System")
 
