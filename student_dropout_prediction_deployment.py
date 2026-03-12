@@ -55,9 +55,7 @@ if st.button("Predict Dropout"):
 
     prediction = model.predict(input_data)
 
-    if prediction[0] == 1:
-        st.error("⚠️ Student Likely to Dropout")
-    else:
-        st.success("✅ Student Likely to Continue"")
-    else:
-        st.success("✅ Student is likely to Continue")
+if prediction[0] == 1:
+    st.error("⚠️ Student Likely to Dropout")
+else:
+    st.success("✅ Student Likely to Continue")
