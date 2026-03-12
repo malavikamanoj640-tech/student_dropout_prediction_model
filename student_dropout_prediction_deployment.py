@@ -10,21 +10,22 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load trained model
-model = joblib.load("student_dropout_prediction_model.pk1")
+# Load model and encoder
+model = joblib.load("student_dropout_prediction_model.pkl")
+encoder = joblib.load("label_encoder_student_dropout.pkl")
 
-st.title("🎓 Student Dropout Prediction System")
+st.title("Student Dropout Prediction System")
+
 st.write("Enter student details to predict dropout risk")
 
-# ---------------- USER INPUTS ---------------- #
+# User Inputs
+Age = st.number_input("Age")
 
-Age = st.number_input("Age", min_value=16, max_value=60)
-
-Gender = st.selectbox("Gender", ["Male", "Female"])
+Gender = st.selectbox("Gender", encoder["Gender"].classes_)
 
 Family_Income = st.number_input("Family Income")
 
-Internet_Access = st.selectbox("Internet Access", ["Yes", "No"])
+Internet_Access = st.selectbox("Internet Access", encoder["Internet_Access"].classes_)
 
 Study_Hours_per_Day = st.number_input("Study Hours per Day")
 
@@ -32,13 +33,13 @@ Attendance_Rate = st.number_input("Attendance Rate")
 
 Assignment_Delay_Days = st.number_input("Assignment Delay Days")
 
-Travel_Time_Minutes = st.number_input("Travel Time (Minutes)")
+Travel_Time_Minutes = st.number_input("Travel Time Minutes")
 
-Part_Time_Job = st.selectbox("Part Time Job", ["Yes", "No"])
+Part_Time_Job = st.selectbox("Part Time Job", encoder["Part_Time_Job"].classes_)
 
-Scholarship = st.selectbox("Scholarship", ["Yes", "No"])
+Scholarship = st.selectbox("Scholarship", encoder["Scholarship"].classes_)
 
-Stress_Index = st.slider("Stress Index", 1, 10)
+Stress_Index = st.slider("Stress Index",1,10)
 
 GPA = st.number_input("GPA")
 
@@ -46,57 +47,45 @@ Semester_GPA = st.number_input("Semester GPA")
 
 CGPA = st.number_input("CGPA")
 
-Semester = st.selectbox("Semester", ["Year 1","Year 2","Year 3","Year 4"])
+Semester = st.selectbox("Semester", encoder["Semester"].classes_)
 
-Department = st.selectbox("Department", ["Arts","Science","Engineering","Business"])
+Department = st.selectbox("Department", encoder["Department"].classes_)
 
-# ------------- ENCODING MAPS ---------------- #
 
-gender_map = {"Male":1, "Female":0}
 
-yes_no_map = {"Yes":1, "No":0}
+# Convert input into DataFrame
+df = pd.DataFrame({
+    "Age":[Age],
+    "Gender":[Gender],
+    "Family_Income":[Family_Income],
+    "Internet_Access":[Internet_Access],
+    "Study_Hours_per_Day":[Study_Hours_per_Day],
+    "Attendance_Rate":[Attendance_Rate],
+    "Assignment_Delay_Days":[Assignment_Delay_Days],
+    "Travel_Time_Minutes":[Travel_Time_Minutes],
+    "Part_Time_Job":[Part_Time_Job],
+    "Scholarship":[Scholarship],
+    "Stress_Index":[Stress_Index],
+    "GPA":[GPA],
+    "Semester_GPA":[Semester_GPA],
+    "CGPA":[CGPA],
+    "Semester":[Semester],
+    "Department":[Department],
+})
 
-semester_map = {"Year 1":1,"Year 2":2,"Year 3":3,"Year 4":4}
+# Encode categorical columns
+if st.button("Predict Dropout Risk"):
 
-department_map = {
-    "Arts":0,
-    "Science":1,
-    "Engineering":2,
-    "Business":3
-}
+    for col in encoder:
+        if col in df.columns:
+            df[col] = encoder[col].transform(df[col])
 
-parent_map = {
-    "High School":0,
-    "Bachelor":1,
-    "Master":2,
-    "PhD":3
-}
+    prediction = model.predict(df)
 
-# ---------------- PREDICTION ---------------- #
-
-if st.button("Predict Dropout"):
-
-    input_data = pd.DataFrame({
-        "Age":[Age],
-        "Gender":[gender_map[Gender]],
-        "Family_Income":[Family_Income],
-        "Internet_Access":[yes_no_map[Internet_Access]],
-        "Study_Hours_per_Day":[Study_Hours_per_Day],
-        "Attendance_Rate":[Attendance_Rate],
-        "Assignment_Delay_Days":[Assignment_Delay_Days],
-        "Travel_Time_Minutes":[Travel_Time_Minutes],
-        "Part_Time_Job":[yes_no_map[Part_Time_Job]],
-        "Scholarship":[yes_no_map[Scholarship]],
-        "Stress_Index":[Stress_Index],
-        "GPA":[GPA],
-        "Semester_GPA":[Semester_GPA],
-        "CGPA":[CGPA],
-        "Semester":[semester_map[Semester]],
-        "Department":[department_map[Department]],
-    })
-
-    prediction = model.predict(input_data)
-
+    if prediction[0] == 1:
+        st.error("⚠️ Student Likely to Dropout")
+    else:
+        st.success("✅ Student Likely to Continue")
     if prediction[0] == 1:
         st.error("⚠️ Student is likely to Dropout")
     else:
