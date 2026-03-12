@@ -50,11 +50,6 @@ Semester = st.selectbox("Semester", ["Year 1","Year 2","Year 3","Year 4"])
 
 Department = st.selectbox("Department", ["Arts","Science","Engineering","Business"])
 
-Parental_Education = st.selectbox(
-    "Parental Education",
-    ["High School","Bachelor","Master","PhD"]
-)
-
 # ------------- ENCODING MAPS ---------------- #
 
 gender_map = {"Male":1, "Female":0}
@@ -98,7 +93,6 @@ if st.button("Predict Dropout"):
         "CGPA":[CGPA],
         "Semester":[semester_map[Semester]],
         "Department":[department_map[Department]],
-        "Parental_Education":[parent_map[Parental_Education]]
     })
 
     prediction = model.predict(input_data)
