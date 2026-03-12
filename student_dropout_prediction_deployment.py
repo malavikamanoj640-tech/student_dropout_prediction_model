@@ -58,6 +58,6 @@ if st.button("Predict Dropout"):
     if prediction[0] == 1:
         st.error("⚠️ Student Likely to Dropout")
     else:
-        st.success("✅ Student Likely to Continue")out")
+        st.success("✅ Student Likely to Continue"")
     else:
         st.success("✅ Student is likely to Continue")
