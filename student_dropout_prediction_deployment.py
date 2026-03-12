@@ -11,7 +11,7 @@ import pandas as pd
 import joblib
 
 # Load model and encoder
-model = joblib.load("student_dropout_prediction_model.pkl")
+model = joblib.load("student_dropout_prediction_model.pk1")
 encoder = joblib.load("label_encoder_student_dropout_prediction.pk1")
 
 st.title("Student Dropout Prediction System")
